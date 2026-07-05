@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Resume Analyzer</title>
+<link rel="stylesheet" href="resume.css">
+</head>
+<body>
+
+  <!-- ================= PAGE 1: INPUT ================= -->
+  <section class="page" id="pageInput">
+    <header class="hero">
+      <div class="hero__inner">
+        <div class="hero__icon">🤖📄</div>
+        <h1>AI Resume Analyzer</h1>
+        <p>Paste your resume and get instant, actionable feedback to improve it</p>
+      </div>
+    </header>
+    <main class="container">
+      <section class="card card--input" aria-labelledby="inputTitle">
+        <h2 id="inputTitle"><span class="step">1</span> Paste your resume</h2>
+        <div class="field field--resume">
+          <label for="resumeInput">Resume text</label>
+          <textarea id="resumeInput" placeholder="Paste your resume text here...
+Or upload a .txt file using the button below."></textarea>
+          <div class="upload-row">
+            <input type="file" id="fileInput" accept=".txt" hidden>
+            <button class="btn btn--secondary" id="uploadBtn" type="button">📁 Upload .txt file</button>
+            <span class="upload-row__hint">Plain text works best (copy-paste from PDF/Word)</span>
+          </div>
+        </div>
+        <button class="btn btn--primary" id="analyzeBtn" type="button">✨ Analyze My Resume</button>
+        <p class="disclaimer">🔒 Everything runs in your browser — nothing is uploaded or saved.</p>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>💡 This is a rule-based tool built for learning purposes — use it as a helpful guide, not the final word.</p>
+    </footer>
+  </section>
+
+  <!-- ================= PAGE 2: RESULTS ================= -->
+  <section class="page" id="pageResults" hidden>
+    <header class="hero hero--compact">
+      <div class="hero__inner">
+        <div class="hero--compact__title">
+          <div class="hero__icon">📊</div>
+          <h1>Your results</h1>
+        </div>
+        <button class="btn btn--ghost" id="backBtn" type="button">← Edit resume</button>
+      </div>
+    </header>
+    <main class="container container--results">
+      <div class="card">
+        <!-- shown briefly while "analyzing" so the transition doesn't feel instant/jarring -->
+        <div class="loading-state" id="loadingState">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Analyzing your resume…</p>
+        </div>
+        <div class="results-grid" id="resultsContent" hidden>
+          <div class="results">
+            <div class="score-block">
+              <div class="score-dial">
+                <svg viewBox="0 0 120 120" class="score-dial__svg">
+                  <circle cx="60" cy="60" r="52" class="score-dial__track"/>
+                  <circle cx="60" cy="60" r="52" class="score-dial__fill" id="scoreArc"/>
+                </svg>
+                <div class="score-dial__num">
+                  <span id="scoreNum">0</span>
+                  <small>/100</small>
+                </div>
+              </div>
+              <div class="score-block__text">
+                <div class="score-block__verdict" id="scoreVerdict">—</div>
+                <div class="score-block__sub" id="scoreSub">Run the analysis to see your score.</div>
+              </div>
+            </div>
+            <div class="ledger" id="ledger"></div>
+            <div class="notes" id="notesList"></div>
+          </div>
+          <div class="marked-copy">
+            <div class="marked-copy__label">📌 Highlighted Resume</div>
+            <div class="marked-copy__legend">
+              <span><i class="dot dot--strong"></i>Strong verb</span>
+              <span><i class="dot dot--weak"></i>Weak phrasing</span>
+              <span><i class="dot dot--num"></i>Quantified result</span>
+            </div>
+            <div class="marked-copy__page" id="markedCopy"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="footer">
+      <p>💡 This is a rule-based tool built for learning purposes — use it as a helpful guide, not the final word.</p>
+    </footer>
+  </section>
+
+<script src="resume.js"></script>
+</body>
+</html>
