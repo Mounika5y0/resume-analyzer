@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"UTF-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
+  <title>AI Resume Analyzer — Get Your Score Out of 100</title>
+  <link rel=\"stylesheet\" href=\"style.css\" />
+  <link href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">
+  <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css\" />
+
+  <!-- PDF.js for PDF parsing -->
+  <script src=\"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js\"></script>
+  <!-- Mammoth for DOCX parsing -->
+  <script src=\"https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js\"></script>
+</head>
+<body>
+  <div class=\"grain\"></div>
+
+  <!-- NAV -->
+  <nav class=\"nav\">
+    <div class=\"nav-brand\">
+      <span class=\"brand-mark\">R/A</span>
+      <span class=\"brand-text\">Resume<span class=\"accent\">Analyzer</span></span>
+    </div>
+    <div class=\"nav-links\">
+      <a href=\"#analyzer\">Analyze</a>
+      <a href=\"#how\">How it works</a>
+      <a href=\"#tips\">Tips</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class=\"hero\">
+    <div class=\"hero-left\">
+      <div class=\"tag\">
+        <span class=\"dot\"></span> AI-powered · 100% private · Runs in your browser
+      </div>
+      <h1 class=\"hero-title\">
+        Score your resume<br/>
+        <span class=\"italic\">out of</span> <span class=\"score-glyph\">100</span>.
+      </h1>
+      <p class=\"hero-sub\">
+        Upload your resume and get an instant breakdown of what's working, what's broken,
+        and <em>exactly</em> how to fix it — line by line.
+      </p>
+      <div class=\"hero-cta\">
+        <a href=\"#analyzer\" class=\"btn-primary\" data-testid=\"hero-cta-analyze\">
+          Analyze my resume <i class=\"fa-solid fa-arrow-right-long\"></i>
+        </a>
+        <span class=\"cta-meta\">PDF · DOCX · TXT · No sign-up</span>
+      </div>
+    </div>
+
+    <div class=\"hero-right\">
+      <div class=\"score-card\">
+        <div class=\"score-card-header\">
+          <span>SAMPLE_ANALYSIS</span>
+          <span class=\"live-dot\"></span>
+        </div>
+        <div class=\"score-ring-wrap\">
+          <svg viewBox=\"0 0 120 120\" class=\"score-ring-svg\">
+            <circle cx=\"60\" cy=\"60\" r=\"52\" class=\"ring-bg\"/>
+            <circle cx=\"60\" cy=\"60\" r=\"52\" class=\"ring-fg\" style=\"stroke-dashoffset: 90;\"/>
+          </svg>
+          <div class=\"score-ring-center\">
+            <span class=\"ring-num\">72</span>
+            <span class=\"ring-lbl\">/ 100</span>
+          </div>
+        </div>
+        <ul class=\"score-preview\">
+          <li><i class=\"fa-solid fa-circle-check ok\"></i> Strong action verbs</li>
+          <li><i class=\"fa-solid fa-triangle-exclamation warn\"></i> Missing metrics</li>
+          <li><i class=\"fa-solid fa-circle-xmark bad\"></i> No LinkedIn URL</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- ANALYZER -->
+  <section id=\"analyzer\" class=\"analyzer\">
+    <div class=\"section-head\">
+      <span class=\"section-num\">01</span>
+      <h2>Drop your resume.</h2>
+      <p>We'll read every line and score it against 40+ recruiter and ATS criteria.</p>
+    </div>
+
+    <div id=\"uploadCard\" class=\"upload-card\" data-testid=\"upload-card\">
+      <input type=\"file\" id=\"fileInput\" accept=\".pdf,.docx,.txt\" hidden data-testid=\"file-input\" />
+      <label for=\"fileInput\" class=\"upload-drop\" id=\"dropZone\" data-testid=\"drop-zone\">
+        <div class=\"upload-icon\"><i class=\"fa-solid fa-cloud-arrow-up\"></i></div>
+        <div class=\"upload-title\">Drop your resume here</div>
+        <div class=\"upload-sub\">or <span class=\"link\">click to browse</span> · PDF, DOCX, TXT · max 5MB</div>
+      </label>
+
+      <div class=\"or-divider\"><span>OR</span></div>
+
+      <div class=\"paste-area\">
+        <textarea id=\"pasteInput\" placeholder=\"Paste your resume text here...\" data-testid=\"paste-input\"></textarea>
+        <button id=\"analyzePasteBtn\" class=\"btn-secondary\" data-testid=\"analyze-paste-btn\">
+          <i class=\"fa-solid fa-wand-magic-sparkles\"></i> Analyze pasted text
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div id=\"loadingCard\" class=\"loading-card hidden\" data-testid=\"loading-card\">
+      <div class=\"loader-scan\">
+        <div class=\"scan-line\"></div>
+        <div class=\"scan-doc\">
+          <div class=\"doc-line\" style=\"width: 60%\"></div>
+          <div class=\"doc-line\" style=\"width: 90%\"></div>
+          <div class=\"doc-line\" style=\"width: 75%\"></div>
+          <div class=\"doc-line\" style=\"width: 85%\"></div>
+          <div class=\"doc-line\" style=\"width: 50%\"></div>
+          <div class=\"doc-line\" style=\"width: 70%\"></div>
+        </div>
+      </div>
+      <div class=\"loading-text\" id=\"loadingText\">Reading your resume...</div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id=\"results\" class=\"results hidden\" data-testid=\"results\">
+      <!-- Overall Score -->
+      <div class=\"result-hero\">
+        <div class=\"big-score-wrap\">
+          <svg viewBox=\"0 0 200 200\" class=\"big-score-svg\">
+            <circle cx=\"100\" cy=\"100\" r=\"88\" class=\"big-ring-bg\"/>
+            <circle cx=\"100\" cy=\"100\" r=\"88\" class=\"big-ring-fg\" id=\"bigRingFg\"/>
+          </svg>
+          <div class=\"big-score-center\">
+            <div class=\"big-score-num\" id=\"overallScore\" data-testid=\"overall-score\">0</div>
+            <div class=\"big-score-lbl\">out of 100</div>
+            <div class=\"big-score-grade\" id=\"overallGrade\">—</div>
+          </div>
+        </div>
+        <div class=\"result-hero-text\">
+          <div class=\"tag alt\"><span class=\"dot\"></span> Analysis complete</div>
+          <h2 id=\"verdictTitle\">Analyzing...</h2>
+          <p id=\"verdictSub\">Your personalised report is ready below.</p>
+          <div class=\"result-actions\">
+            <button id=\"restartBtn\" class=\"btn-ghost\" data-testid=\"restart-btn\">
+              <i class=\"fa-solid fa-rotate-left\"></i> Analyze another
+            </button>
+            <button id=\"downloadBtn\" class=\"btn-secondary\" data-testid=\"download-btn\">
+              <i class=\"fa-solid fa-download\"></i> Download report
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Breakdown -->
+      <div class=\"breakdown\">
+        <h3 class=\"block-title\"><span class=\"block-num\">02</span> Section breakdown</h3>
+        <div class=\"section-grid\" id=\"sectionGrid\" data-testid=\"section-grid\"></div>
+      </div>
+
+      <!-- Issues + Fixes -->
+      <div class=\"two-col\">
+        <div class=\"col-issues\">
+          <h3 class=\"block-title\"><span class=\"block-num\">03</span> What needs fixing</h3>
+          <div id=\"issuesList\" class=\"issue-list\" data-testid=\"issues-list\"></div>
+        </div>
+        <div class=\"col-fixes\">
+          <h3 class=\"block-title\"><span class=\"block-num\">04</span> How to fix it</h3>
+          <div id=\"fixesList\" class=\"fix-list\" data-testid=\"fixes-list\"></div>
+        </div>
+      </div>
+
+      <!-- Keyword & ATS -->
+      <div class=\"ats-block\">
+        <h3 class=\"block-title\"><span class=\"block-num\">05</span> ATS &amp; Keyword scan</h3>
+        <div class=\"ats-grid\">
+          <div class=\"ats-card\">
+            <div class=\"ats-card-head\">
+              <i class=\"fa-solid fa-robot\"></i>
+              <span>ATS Compatibility</span>
+              <span class=\"ats-score\" id=\"atsScore\">—</span>
+            </div>
+            <div id=\"atsList\"></div>
+          </div>
+          <div class=\"ats-card\">
+            <div class=\"ats-card-head\">
+              <i class=\"fa-solid fa-key\"></i>
+              <span>Detected keywords</span>
+              <span class=\"ats-score\" id=\"keywordCount\">—</span>
+            </div>
+            <div id=\"keywordCloud\" class=\"keyword-cloud\"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class=\"stats-strip\">
+        <div class=\"stat\"><span class=\"stat-num\" id=\"statWords\">0</span><span class=\"stat-lbl\">Words</span></div>
+        <div class=\"stat\"><span class=\"stat-num\" id=\"statPages\">0</span><span class=\"stat-lbl\">Pages est.</span></div>
+        <div class=\"stat\"><span class=\"stat-num\" id=\"statVerbs\">0</span><span class=\"stat-lbl\">Action verbs</span></div>
+        <div class=\"stat\"><span class=\"stat-num\" id=\"statMetrics\">0</span><span class=\"stat-lbl\">Quantified results</span></div>
+        <div class=\"stat\"><span class=\"stat-num\" id=\"statBullets\">0</span><span class=\"stat-lbl\">Bullet points</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id=\"how\" class=\"how\">
+    <div class=\"section-head\">
+      <span class=\"section-num\">◇</span>
+      <h2>How it works</h2>
+    </div>
+    <div class=\"how-grid\">
+      <div class=\"how-item\">
+        <div class=\"how-num\">01</div>
+        <h4>Parse</h4>
+        <p>Your file is read locally in your browser using PDF.js &amp; Mammoth. Nothing leaves your device.</p>
+      </div>
+      <div class=\"how-item\">
+        <div class=\"how-num\">02</div>
+        <h4>Analyze</h4>
+        <p>40+ heuristics scan for contact info, action verbs, quantified results, ATS traps, length &amp; formatting.</p>
+      </div>
+      <div class=\"how-item\">
+        <div class=\"how-num\">03</div>
+        <h4>Score</h4>
+        <p>Every section is graded and rolled up into a single recruiter-weighted score out of 100.</p>
+      </div>
+      <div class=\"how-item\">
+        <div class=\"how-num\">04</div>
+        <h4>Fix</h4>
+        <p>Get a prioritised, actionable checklist — the exact edits to move your score up.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPS -->
+  <section id=\"tips\" class=\"tips\">
+    <div class=\"section-head\">
+      <span class=\"section-num\">◇</span>
+      <h2>What a top-scoring resume looks like</h2>
+    </div>
+    <div class=\"tips-grid\">
+      <div class=\"tip\">
+        <i class=\"fa-solid fa-bolt\"></i>
+        <h5>Lead with verbs</h5>
+        <p>Start every bullet with a strong action verb — <em>led, built, shipped, reduced</em> — never \"responsible for\".</p>
+      </div>
+      <div class=\"tip\">
+        <i class=\"fa-solid fa-chart-line\"></i>
+        <h5>Quantify everything</h5>
+        <p>Numbers beat adjectives. \"Increased conversion 34%\" &gt; \"significantly improved conversion\".</p>
+      </div>
+      <div class=\"tip\">
+        <i class=\"fa-solid fa-ruler-horizontal\"></i>
+        <h5>One page. Two max.</h5>
+        <p>Recruiters spend 7 seconds per resume. Trim ruthlessly. Every line must earn its place.</p>
+      </div>
+      <div class=\"tip\">
+        <i class=\"fa-solid fa-robot\"></i>
+        <h5>ATS-friendly formatting</h5>
+        <p>No tables, no images, no fancy columns. Plain text, standard sections, clean fonts.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class=\"footer\">
+    <div>Built for job seekers who ship. &copy; ResumeAnalyzer</div>
+    <div class=\"footer-meta\">100% client-side · No tracking · No uploads</div>
+  </footer>
+
+  <script src=\"script.js\"></script>
+</body>
+</html>
