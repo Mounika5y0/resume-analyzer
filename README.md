@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI Resume Analyzer
 
 An AI-powered Resume Analyzer built using HTML, CSS, and JavaScript.
@@ -31,3 +32,6 @@ AI resume analyzer/
 1. Download or clone the project.
 2. Open the folder in VS Code.
 3. Open `resume.html` using Live Server.
+=======
+# resume-analyzer
+>>>>>>> 475e32572fa0d89d003e149cf2eb7c642053b43d
